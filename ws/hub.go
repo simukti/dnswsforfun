@@ -10,10 +10,10 @@ type HubMessage chan interface{}
 
 type (
 	DNSLog struct {
-		Questions []string `json:"questions"`
-		Answers   []string `json:"answers"`
 		Upstream  string   `json:"upstream"`
 		Timestamp string   `json:"timestamp"`
+		Questions []string `json:"questions"`
+		Answers   []string `json:"answers"`
 		Duration  int64    `json:"duration"`
 	}
 	FreeText struct {
@@ -22,8 +22,8 @@ type (
 		Timestamp string `json:"timestamp"`
 	}
 	OutMsg struct {
-		Type string      `json:"type"`
 		Data interface{} `json:"data"`
+		Type string      `json:"type"`
 	}
 )
 

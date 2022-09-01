@@ -52,7 +52,7 @@
                                     <div class="card-body">
                                         <ul>
                                             <li>
-                                                This server provides a DNS server on UDP port 53, each incoming DNS
+                                                This server provides a DNS server on UDP port 53 (<i>configurable</i>), each incoming DNS
                                                 request will be broadcasted to all connected websocket clients. To
                                                 demonstrate the server-to-client message.
                                             </li>
@@ -61,6 +61,9 @@
                                                 and then the incoming message will also be broadcasted to all connected
                                                 websocket clients. To demonstrate the client-to-server-to-client
                                                 message.
+                                            </li>
+                                            <li>
+                                                The source code is available at: <a href="https://github.com/simukti/dnswsforfun">https://github.com/simukti/dnswsforfun</a>
                                             </li>
                                         </ul>
                                         <button class="btn btn-primary w-100" id="btnTestSend" onclick="sendWs()">Send

@@ -12,9 +12,9 @@ const (
 	defaultUIDCharlist = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-"
 )
 
+// uidGenerator simple random string generator for demo purpose.
 type uidGenerator struct{}
 
-// uidGenerator simple random string generator for demo purpose
 func newUIDGenerator() *uidGenerator {
 	var s [16]byte
 	if _, err := cryptoRand.Read(s[:]); err != nil {
@@ -27,7 +27,7 @@ func newUIDGenerator() *uidGenerator {
 
 func (u *uidGenerator) UID() string {
 	var random, uid [defaultUIDLen]byte
-	if _, err := rand.Read(random[:]); err != nil {
+	if _, err := rand.Read(random[:]); err != nil { //nolint:gosec
 		panic(fmt.Sprintf("random read error from math/rand: '%s'", err.Error()))
 	}
 	for i := 0; i < defaultUIDLen; i++ {

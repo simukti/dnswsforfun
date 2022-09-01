@@ -1,0 +1,119 @@
+# golangci-lint v1.48.0
+run:
+  timeout: 1m
+  tests: false
+  skip-dirs:
+    - vendor/
+    - build/
+  skip-files:
+    - ./*_test.go
+linters-settings:
+  funlen:
+    lines: 180
+    statements: 50
+  goconst:
+    min-len: 2
+    min-occurrences: 2
+  goimports:
+    local-prefixes: dnswsforfun
+  govet:
+    check-shadowing: true
+    settings:
+      shadow:
+        strict: true
+    enable:
+      - asmdecl
+      - assign
+      - atomic
+      - atomicalign
+      - bools
+      - buildtag
+      - cgocall
+      - composites
+      - copylocks
+      - deepequalerrors
+      - errorsas
+      - fieldalignment
+      - findcall
+      - framepointer
+      - httpresponse
+      - ifaceassert
+      - loopclosure
+      - lostcancel
+      - nilfunc
+      - nilness
+      - printf
+      - reflectvaluecompare
+      - shadow
+      - shift
+      - sigchanyzer
+      - sortslice
+      - stdmethods
+      - stringintconv
+      - structtag
+      - testinggoroutine
+      - tests
+      - unmarshal
+      - unreachable
+      - unsafeptr
+      - unusedresult
+      - unusedwrite
+  lll:
+    line-length: 120
+  nestif:
+    min-complexity: 5
+  tagliatelle:
+    case:
+      rules:
+        json: snake
+linters: # don't use --enable-all
+  disable-all: true
+  enable:
+    - bodyclose
+    - containedctx
+    - deadcode
+    - decorder
+    - depguard
+    - dogsled
+    # - dupl # enable it once you're ready, otherwise, make the code works first
+    - durationcheck
+    - errcheck
+    - errchkjson
+    - errname
+    - exportloopref
+    - forbidigo
+    - funlen
+    - gochecknoglobals
+    - gochecknoinits
+    - goconst
+    - gocritic
+    - gocyclo
+    - godot
+    - gofmt
+    - goimports
+    - gosec
+    - gosimple
+    - govet
+    - ineffassign
+    - lll
+    - misspell
+    - nakedret
+    - nestif
+    - noctx
+    - nolintlint
+    - prealloc
+    - predeclared
+    - revive
+    #- rowserrcheck # disabled because Go v1.18 generic
+    #- sqlclosecheck # disabled because Go v1.18 generic
+    - stylecheck
+    - staticcheck
+    #- structcheck # disabled because Go v1.18 generic
+    - stylecheck
+    - tagliatelle
+    - typecheck
+    - unconvert
+    - unused
+    - varcheck
+    - whitespace
+    # - wrapcheck # enable it once you ready :-D

@@ -2,7 +2,6 @@ package ws
 
 import (
 	"bytes"
-	"fmt"
 	"html"
 	"net/http"
 	"time"
@@ -10,6 +9,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+// TODO: you should make this configurable.
 const (
 	wsWriteTimeout     = time.Second * 5
 	wsPingPeriod       = time.Second * 5
@@ -30,10 +30,6 @@ func Handler(hub *Hub) http.HandlerFunc {
 		EnableCompression: false,
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
-		if hub.ConnectedConn() >= 256 {
-			http.Error(w, "websocket connection capped to 256, sorry", http.StatusBadRequest)
-			return
-		}
 		ws, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
@@ -71,7 +67,8 @@ type Conn struct {
 	readLimit     int64 // KB
 }
 
-func (c *Conn) ID() string                  { return c.id }
+func (c *Conn) ID() string { return c.id }
+
 func (c *Conn) Write(p []byte) (int, error) { c.outMsgChan <- p; return len(p), nil }
 
 func (c *Conn) Close() error {
@@ -95,7 +92,7 @@ func (c *Conn) reader() {
 		// the message will be broadcasted to all connected user
 		c.hub.Publish(&FreeText{
 			Sender:    c.ID(),
-			Message:   html.EscapeString(fmt.Sprintf("%s", bytes.TrimSpace(p))),
+			Message:   html.EscapeString(string(bytes.TrimSpace(p))),
 			Timestamp: time.Now().Format(time.RFC3339),
 		})
 	}
