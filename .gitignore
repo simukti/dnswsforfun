@@ -1,0 +1,11 @@
+build/
+data/
+.vscode/
+.idea/
+.scannerwork/
+.DS_Store
+config.toml
+*.out
+*.db
+*-wal
+*-shm

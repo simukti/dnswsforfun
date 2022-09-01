@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>DNS And Websocket For Fun</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+    <meta name="HandheldFriendly" content="True"/>
+    <meta name="MobileOptimized" content="320"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@latest/dist/css/tabler.min.css">
+    <style>
+        pre {
+            outline: 1px solid #ccc;
+            padding: 5px;
+            margin: 5px;
+        }
+
+        .string {
+            color: #008000;
+        }
+
+        .number {
+            color: #0000ff;
+        }
+
+        .boolean {
+            color: #b22222;
+        }
+
+        .null {
+            color: #808080;
+        }
+
+        .key {
+            color: #000000;
+        }
+    </style>
+</head>
+<body class="border-top-wide border-primary d-flex flex-column">
+<div class="page">
+    <div class="page-wrapper">
+        <div class="page-body">
+            <div class="container-xl">
+                <div class="row row-cards">
+                    <div class="col-md-12">
+                        <div class="row row-cards">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        Websocket Test Page
+                                    </div>
+                                    <div class="card-body">
+                                        <ul>
+                                            <li>
+                                                This server provides a DNS server on UDP port 53, each incoming DNS
+                                                request will be broadcasted to all connected websocket clients. To
+                                                demonstrate the server-to-client message.
+                                            </li>
+                                            <li>
+                                                It also receives an incoming free text message from the WebSocket client
+                                                and then the incoming message will also be broadcasted to all connected
+                                                websocket clients. To demonstrate the client-to-server-to-client
+                                                message.
+                                            </li>
+                                        </ul>
+                                        <button class="btn btn-primary w-100" id="btnTestSend" onclick="sendWs()">Send
+                                            WS Message
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        DNS Logs
+                                    </div>
+                                    <div class="list-group list-group-flush list-group-hoverable">
+                                        <div class="list-group-item">
+                                            <div class="row align-items-center">
+                                                <div class="col" id="dnslog"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        Message
+                                    </div>
+                                    <div class="list-group list-group-flush list-group-hoverable">
+                                        <div class="list-group-item">
+                                            <div class="row align-items-center">
+                                                <div class="col" id="freetext"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reconnecting-websocket/1.0.0/reconnecting-websocket.min.js"
+        integrity="sha512-B4skI5FiLurS86aioJx9VfozI1wjqrn6aTdJH+YQUmCZum/ZibPBTX55k5d9XM6EsKePDInkLVrN7vPmJxc1qA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script type="text/javascript">
+    // copied from https://gist.github.com/faffyman/6183311
+    function syntaxHighlight(json) {
+        if (typeof json != 'string') {
+            json = JSON.stringify(json, undefined, 2);
+        }
+
+        json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+            var cls = 'number';
+            if (/^"/.test(match)) {
+                if (/:$/.test(match)) {
+                    cls = 'key';
+                } else {
+                    cls = 'string';
+                }
+            } else if (/true|false/.test(match)) {
+                cls = 'boolean';
+            } else if (/null/.test(match)) {
+                cls = 'null';
+            }
+            return '<span class="' + cls + '">' + match + '</span>';
+        });
+    }
+    // all JS codes below is dead simple and just works in Chrome and Firefox.
+    let dnslog = document.getElementById('dnslog');
+    let freetext = document.getElementById('freetext');
+    let wsEndpoint = 'ws://' + window.location.host + '/ws';
+    if (location.protocol === "https:") {
+        wsEndpoint = 'wss://' + window.location.host + '/ws';
+    }
+    const ws = new ReconnectingWebSocket(wsEndpoint);
+    ws.onmessage = function (e) {
+        let msg = JSON.parse(e.data);
+        if (msg.type === "dnslog") {
+            dnslog.innerHTML = '<pre>' + syntaxHighlight(JSON.stringify(msg.data, null, 4)) + '</pre>';
+        } else if (msg.type === "freetext") {
+            freetext.innerHTML = '<pre>' + syntaxHighlight(JSON.stringify(msg.data, null, 4)) + '</pre>';
+        }
+    };
+
+    function sendWs() {
+        if (ws.readyState !== WebSocket.CLOSED) {
+            ws.send(navigator.userAgent);
+        }
+    }
+</script>
+</body>
+</html>
