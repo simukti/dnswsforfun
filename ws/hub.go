@@ -104,8 +104,16 @@ func (h *Hub) handler(incoming HubMessage) {
 				continue
 			}
 			out := &OutMsg{Type: outType, Data: msg}
+			// Although conn is an io.Writer and we can just use json.NewEncoder(conn).Encode(out),
+			// it will do marshaling for each conn.
+			// So we do marshaling once here then write p directly to each conn.
+			p, err := json.Marshal(out)
+			if err != nil {
+				log.Printf("ws.Hub: failed to marshal out message %s", err.Error())
+				continue
+			}
 			for _, conn := range h.connMap {
-				if err := json.NewEncoder(conn).Encode(out); err != nil {
+				if _, err = conn.Write(p); err != nil {
 					log.Printf("ws.Hub: failed to send to connID %s", conn.ID())
 				}
 			}
